@@ -1,14 +1,17 @@
-#SingleInstance force ; 确保脚本只有一个实例在运行
+#Persistent ; 确保脚本在后台持续运行 (Ensures the script keeps running in the background)
+#SingleInstance force ; 确保脚本只有一个实例在运行 (Ensures only one instance of the script runs)
 
 ; --- 配置区域 (Configuration Area) ---
-HoldDuration := 135      ; 鼠标左键按住的持续时间 (毫秒)，例如 500毫秒 = 0.5秒。请根据散兵重击的实际需求调整。
+HoldDuration := 135      ; 鼠标左键按住的持续时间 (毫秒)
                          ; (Mouse left button hold duration (milliseconds). Adjust for Wanderer's charged attack timing.)
-PauseAfterRelease := 1 ; 鼠标松开后到下一次重击开始前的停顿时间 (毫秒)。请根据手感调整。
-                         ; (Pause duration (milliseconds) after mouse release before the next attack. Adjust to your preference.)
+MinPauseAfterRelease := 1 ; 随机生成的“松开后停顿时间”的最小值 (毫秒)
+                         ; (Minimum value for the randomized "pause after release" (milliseconds))
+MaxPauseAfterRelease := 5 ; 随机生成的“松开后停顿时间”的最大值 (毫秒)
+                         ; (Maximum value for the randomized "pause after release" (milliseconds))
 TimerInterval := 1      ; 脚本检查是否执行下一次点击的频率 (毫秒)。
-                         ; 实际的攻击间隔大约是 HoldDuration + PauseAfterRelease。
+                         ; 实际的攻击间隔大约是 HoldDuration + 随机的PauseAfterRelease。
                          ; (How often (milliseconds) the script checks to perform the next action.
-                         ; Actual attack cycle time is approximately HoldDuration + PauseAfterRelease.)
+                         ; Actual attack cycle time is approximately HoldDuration + randomized PauseAfterRelease.)
 
 ; --- 全局变量 (Global Variables) ---
 Global Toggle := false   ; 用于切换宏的开关状态，初始为关闭 (Macro toggle state (true = ON, false = OFF), initially off.)
@@ -43,13 +46,13 @@ PerformChargedAttack:
         Return
 
     ; (可选) 检查当前活动窗口是否为原神，以避免在其他程序中误触发
-    ; 您需要将 "Genshin Impact" 替换为游戏窗口的精确标题 (通常显示在窗口左上角)
+    ; 您需要将 "Genshin Impact" 或 "原神" 替换为游戏窗口的精确标题 (通常显示在窗口左上角)
     ; 如果需要此功能，请取消下面 IfWinActive 行和对应大括号的注释
     ; (Optional: Check if Genshin Impact is the active window to avoid misfires in other programs.)
-    ; (You'll need to replace "Genshin Impact" with the exact window title of your game.)
+    ; (You'll need to replace "Genshin Impact" or "原神" with the exact window title of your game.)
     ; (Uncomment the IfWinActive line and its corresponding braces if you want to use this feature.)
 
-    ; IfWinActive, Genshin Impact ; 例如 "Genshin Impact" 或 "原神"
+    ; IfWinActive, 原神 ; 例如 "Genshin Impact" 或 "原神" (e.g., "Genshin Impact" or "原神")
     ; {
         MouseClick, Left, , , 1, 0, D  ; 按下鼠标左键不松开 (D = Down)
                                       ; (Press and hold left mouse button (D = Down))
@@ -57,7 +60,11 @@ PerformChargedAttack:
 
         MouseClick, Left, , , 1, 0, U  ; 松开鼠标左键 (U = Up)
                                       ; (Release left mouse button (U = Up))
-        Sleep, %PauseAfterRelease%     ; 松开后停顿指定时间 (Pause for the specified duration after release)
+        
+        ; 生成一个在 MinPauseAfterRelease 和 MaxPauseAfterRelease之间的随机数作为本次的停顿时间
+        ; (Generate a random number between MinPauseAfterRelease and MaxPauseAfterRelease for this pause)
+        Random, CurrentPauseAfterRelease, %MinPauseAfterRelease%, %MaxPauseAfterRelease%
+        Sleep, %CurrentPauseAfterRelease% ; 松开后停顿随机生成的时间 (Pause for the randomly generated duration after release)
     ; }
     ; Else
     ; {
