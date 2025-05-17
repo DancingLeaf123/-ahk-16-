@@ -19,7 +19,8 @@ Global Toggle := false   ; 用于切换宏的开关状态，初始为关闭 (Mac
 ; --- 热键定义 (Hotkey Definition) ---
 ; 使用 ` (重音符/反引号键) 来切换宏的开关状态。
 ; (Use the ` (Grave Accent) key to toggle the macro ON or OFF.)
-$`:: ; Grave Accent key (`)
+; $`:: ; Grave Accent key (`)
+$t:: ; 't' key
     Toggle := !Toggle ; 按下 ` 键时，切换Toggle变量的布尔值 (true变为false, false变为true)
                       ; (When the ` key is pressed, toggle the boolean value of the Toggle variable.)
 
